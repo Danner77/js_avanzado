@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Animación con Canvas HTML</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #1a1a1a;
+        }
+        canvas {
+            border: 2px solid #ffffff;
+            background-color: #000000;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="miCanvas" width="500" height="300"></canvas>
+
+    <script>
+        const canvas = document.getElementById("miCanvas");
+        const ctx = canvas.getContext("2d");
+
+        // Propiedades de la pelota
+        let x = canvas.width / 2;
+        let y = canvas.height / 2;
+        let dx = 2; // Velocidad en X
+        let dy = 2; // Velocidad en Y
+        let radio = 20;
+
+        function actualizar() {
+            // 1. Limpiar el lienzo
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 2. Dibujar el círculo
+            ctx.beginPath();
+            ctx.arc(x, y, radio, 0, Math.PI * 2);
+            ctx.fillStyle = "#00FFCC";
+            ctx.fill();
+            ctx.closePath();
+
+            // 3. Rebotar en los bordes
+            if (x + dx > canvas.width - radio || x + dx < radio) {
+                dx = -dx;
+            }
+            if (y + dy > canvas.height - radio || y + dy < radio) {
+                dy = -dy;
+            }
+
+            // 4. Mover la posición
+            x += dx;
+            y += dy;
+
+            // 5. Llamar al siguiente fotograma
+            requestAnimationFrame(actualizar);
+        }
+
+        // Iniciar la animación
+        actualizar();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gráfica Estadística Nativa con Canvas</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f7f6;
+            font-family: Arial, sans-serif;
+        }
+        .contenedor {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        canvas {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="contenedor">
+        <h2>Ventas Trimestrales (Canvas Puro)</h2>
+        <canvas id="miGrafica" width="500" height="350"></canvas>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("miGrafica");
+        const ctx = canvas.getContext("2d");
+
+        // 1. Datos estadísticos (CORREGIDO: Valores numéricos agregados)
+        const datos =;
+        const etiquetas = ['Trim 1', 'Trim 2', 'Trim 3', 'Trim 4'];
+        const colores = ['#36A2EB', '#4BC0C0', '#FFCE56', '#FF6384'];
+
+        // 2. Configuración de márgenes y dimensiones útiles
+        const margenIzquierdo = 60;
+        const margenInferior = 40;
+        const margenSuperior = 20;
+        const margenDerecho = 20;
+
+        const anchoGrafica = canvas.width - margenIzquierdo - margenDerecho;
+        const altoGrafica = canvas.height - margenSuperior - margenInferior;
+
+        // Encontrar el valor máximo para escalar la gráfica proporcionalmente
+        const valorMaximo = Math.max(...datos);
+
+        // 3. Dibujar los ejes de coordenadas (Líneas guía)
+        ctx.strokeStyle = "#cccccc";
+        ctx.lineWidth = 1;
+        
+        // Eje Y
+        ctx.beginPath();
+        ctx.moveTo(margenIzquierdo, margenSuperior);
+        ctx.lineTo(margenIzquierdo, canvas.height - margenInferior);
+        ctx.stroke();
+
+        // Eje X
+        ctx.beginPath();
+        ctx.moveTo(margenIzquierdo, canvas.height - margenInferior);
+        ctx.lineTo(canvas.width - margenDerecho, canvas.height - margenInferior);
+        ctx.stroke();
+
+        // 4. Dibujar las barras y textos
+        const anchoBarra = (anchoGrafica / datos.length) * 0.6; // Ancho de cada barra
+        const espacioEntreBarras = (anchoGrafica / datos.length) * 0.4; // Espacio de separación
+
+        datos.forEach((valor, i) => {
+            // Calcular la altura proporcional de la barra
+            const alturaBarra = (valor / valorMaximo) * altoGrafica;
+
+            // Coordenadas X e Y de origen
+            const x = margenIzquierdo + (i * (anchoBarra + espacioEntreBarras)) + (espacioEntreBarras / 2);
+            const y = canvas.height - margenInferior - alturaBarra;
+
+            // Dibujar el rectángulo de la barra
+            ctx.fillStyle = colores[i];
+            ctx.fillRect(x, y, anchoBarra, alturaBarra);
+
+            // Dibujar el texto del valor encima de la barra
+            ctx.fillStyle = "#333333";
+            ctx.font = "bold 12px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText(`$${valor}`, x + (anchoBarra / 2), y - 8);
+
+            // Dibujar la etiqueta en el eje X
+            ctx.font = "12px Arial";
+            ctx.fillText(etiquetas[i], x + (anchoBarra / 2), canvas.height - margenInferior + 20);
+        });
+
+        // 5. Dibujar marcas básicas en el eje Y (Valores de referencia)
+        ctx.fillStyle = "#666666";
+        ctx.textAlign = "right";
+        ctx.font = "11px Arial";
+        
+        // Cero
+        ctx.fillText("0", margenIzquierdo - 10, canvas.height - margenInferior + 4);
+        // Mitad de escala
+        ctx.fillText(`$${Math.round(valorMaximo / 2)}`, margenIzquierdo - 10, canvas.height - margenInferior - (altoGrafica / 2) + 4);
+        // Máximo
+        ctx.fillText(`$${valorMaximo}`, margenIzquierdo - 10, margenSuperior + 4);
+    </script>
+
+</body>
+</html>
